@@ -4,17 +4,17 @@ pipeline {
     stages {
         stage('Building docker app and mongodb image') {
             steps {
-                    // Pull and Push MongoDB Image
+                    // Authenticate Docker
                     sh '''
-                        echo "Pulling mognodb image ..." 
-                        sudo docker pull bitnami/mongodb:4.4.4
-                        echo "Pulled mognodb image ..." 
-                        sudo docker tag bitnami/mongodb:4.4.4 us-east1-docker.pkg.dev/halogen-data-401020/private-vm-repo/mongodb:latest
-                        echo "Pushing mognodb image ..." 
-                        sudo docker push us-east1-docker.pkg.dev/halogen-data-401020/private-vm-repo/mongodb:latest
-                        echo "Image Pushed ..." 
+                        cd /tmp
+                        sudo wget --header="Metadata-Flavor: Google" -O key.json http://metadata.google.internal/computeMetadata/v1/instance/attributes/ssh-keys
+                        cat key.json | base64 -d > key1.json
+                        gcloud auth activate-service-account --key-file=key1.json
+                        yes | gcloud auth configure-docker us-east1-docker.pkg.dev 
+                        cat key.json | sudo docker login -u _json_key_base64 --password-stdin https://us-east1-docker.pkg.dev
+                        cd /
                     '''
-                    
+
                     // Pull and Push App Image
                     sh '''
                         echo "Pulling app image ..."
@@ -25,7 +25,16 @@ pipeline {
                         echo "Image Pushed" 
                     '''
 
-                    
+                    // Pull and Push MongoDB Image
+                    sh '''
+                        echo "Pulling mognodb image ..." 
+                        sudo docker pull bitnami/mongodb:4.4.4
+                        echo "Pulled mognodb image ..." 
+                        sudo docker tag bitnami/mongodb:4.4.4 us-east1-docker.pkg.dev/halogen-data-401020/private-vm-repo/mongodb:latest
+                        echo "Pushing mognodb image ..." 
+                        sudo docker push us-east1-docker.pkg.dev/halogen-data-401020/private-vm-repo/mongodb:latest
+                        echo "Image Pushed ..." 
+                    '''
             }
         }
         stage('getting gke credintials') {
