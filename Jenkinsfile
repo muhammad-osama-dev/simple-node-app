@@ -8,7 +8,7 @@ pipeline {
                     sh '''
                         cd /tmp
                         sudo wget --header="Metadata-Flavor: Google" -O key.json http://metadata.google.internal/computeMetadata/v1/instance/attributes/ssh-keys
-                        cat key.json | base64 -d > /tmp/key1.json
+                        sudo cat key.json | base64 -d > /tmp/key1.json
                         gcloud auth activate-service-account --key-file=key1.json
                         yes | gcloud auth configure-docker us-east1-docker.pkg.dev 
                         cat key.json | sudo docker login -u _json_key_base64 --password-stdin https://us-east1-docker.pkg.dev
