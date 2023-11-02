@@ -9,7 +9,18 @@ pipeline {
                         gcloud auth activate-service-account --key-file=SA_key.json
                         yes | gcloud auth configure-docker us-east1-docker.pkg.dev 
                     '''
-
+                    
+                                        // Pull and Push MongoDB Image
+                    sh '''
+                        echo "Pulling mognodb image ..." 
+                        sudo docker pull bitnami/mongodb:4.4.4
+                        echo "Pulled mognodb image ..." 
+                        sudo docker tag bitnami/mongodb:4.4.4 us-east1-docker.pkg.dev/halogen-data-401020/private-vm-repo/mongodb:latest
+                        echo "Pushing mognodb image ..." 
+                        sudo docker push us-east1-docker.pkg.dev/halogen-data-401020/private-vm-repo/mongodb:latest
+                        echo "Image Pushed ..." 
+                    '''
+                    
                     // Pull and Push App Image
                     sh '''
                         echo "Pulling app image ..."
@@ -20,16 +31,7 @@ pipeline {
                         echo "Image Pushed" 
                     '''
 
-                    // Pull and Push MongoDB Image
-                    sh '''
-                        echo "Pulling mognodb image ..." 
-                        sudo docker pull bitnami/mongodb:4.4.4
-                        echo "Pulled mognodb image ..." 
-                        sudo docker tag bitnami/mongodb:4.4.4 us-east1-docker.pkg.dev/halogen-data-401020/private-vm-repo/mongodb:latest
-                        echo "Pushing mognodb image ..." 
-                        sudo docker push us-east1-docker.pkg.dev/halogen-data-401020/private-vm-repo/mongodb:latest
-                        echo "Image Pushed ..." 
-                    '''
+
             }
         }
         stage('getting gke credintials') {
