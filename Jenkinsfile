@@ -51,7 +51,7 @@ pipeline {
                 cd /
                 kubectl get nodes
                 kubectl apply -f ./kubernetes/mongodb
-                kubectl apply -f ./kubernetes/app-deployment
+                kubectl apply -f ./kubernetes/app_deployment
                 sleep 120
                 kubectl get pods -n staging
                 kubectl get pods -n database
