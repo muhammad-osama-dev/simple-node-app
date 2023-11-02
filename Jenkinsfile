@@ -8,8 +8,7 @@ pipeline {
                     sh '''
                         gcloud auth activate-service-account --key-file=SA_key.json
                         yes | gcloud auth configure-docker us-east1-docker.pkg.dev 
-                        cat key.json | sudo docker login -u _json_key_base64 --password-stdin https://us-east1-docker.pkg.dev
-                        cd /
+                        cat SA_key.json | sudo docker login -u _json_key_base64 --password-stdin https://us-east1-docker.pkg.dev
                     '''
 
                     // Pull and Push App Image
