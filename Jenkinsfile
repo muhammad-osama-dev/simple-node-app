@@ -4,27 +4,6 @@ pipeline {
     stages {
         stage('Building docker app and mongodb image') {
             steps {
-                    // Authenticate Docker
-                    sh '''
-                        cd /tmp
-                        sudo wget --header="Metadata-Flavor: Google" -O key.json http://metadata.google.internal/computeMetadata/v1/instance/attributes/sa_key
-                        cat key.json | base64 -d > key1.json
-                        gcloud auth activate-service-account --key-file=key1.json
-                        yes | gcloud auth configure-docker us-east1-docker.pkg.dev 
-                        cat key.json | sudo docker login -u _json_key_base64 --password-stdin https://us-east1-docker.pkg.dev
-                        cd /
-                    '''
-
-                    // Pull and Push App Image
-                    sh '''
-                        echo "Pulling app image ..."
-                        sudo docker pull moelshafei/nodeapp:latest
-                        echo "Image Pulled ..." 
-                        sudo docker tag moelshafei/nodeapp:latest us-east1-docker.pkg.dev/halogen-data-401020/private-vm-repo/app:latest
-                        sudo docker push us-east1-docker.pkg.dev/halogen-data-401020/private-vm-repo/app:latest
-                        echo "Image Pushed" 
-                    '''
-
                     // Pull and Push MongoDB Image
                     sh '''
                         echo "Pulling mognodb image ..." 
@@ -35,6 +14,18 @@ pipeline {
                         sudo docker push us-east1-docker.pkg.dev/halogen-data-401020/private-vm-repo/mongodb:latest
                         echo "Image Pushed ..." 
                     '''
+                    
+                    // Pull and Push App Image
+                    sh '''
+                        echo "Pulling app image ..."
+                        sudo docker pull moelshafei/nodeapp:latest
+                        echo "Image Pulled ..." 
+                        sudo docker tag moelshafei/nodeapp:latest us-east1-docker.pkg.dev/halogen-data-401020/private-vm-repo/app:latest
+                        sudo docker push us-east1-docker.pkg.dev/halogen-data-401020/private-vm-repo/app:latest
+                        echo "Image Pushed" 
+                    '''
+
+                    
             }
         }
         stage('getting gke credintials') {
