@@ -9,7 +9,6 @@ pipeline {
                         gcloud auth activate-service-account --key-file=SA_key.json
                         yes | gcloud auth configure-docker us-east1-docker.pkg.dev 
                     '''
-                    
                                         // Pull and Push MongoDB Image
                     sh '''
                         echo "Pulling mognodb image ..." 
@@ -20,7 +19,7 @@ pipeline {
                         sudo docker push us-east1-docker.pkg.dev/halogen-data-401020/private-vm-repo/mongodb:latest
                         echo "Image Pushed ..." 
                     '''
-                    
+
                     // Pull and Push App Image
                     sh '''
                         echo "Pulling app image ..."
@@ -40,11 +39,8 @@ pipeline {
                 sh '''
                 sudo apt-get install kubectl
                 echo "kubectl installed ..." 
-                sudo apt-get install google-cloud-sdk-gke-gcloud-auth-plugin
-                echo "google auth ..."
                 export KUBECONFIG=$HOME/.kube/config
-                gcloud container clusters get-credentials gke-cluster --zone us-central1 --project halogen-data-401020 --internal-ip
-                gcloud container clusters update gke-cluster --zone us-central1  --enable-master-global-access
+                gcloud container clusters get-credentials gke-cluster --zone us-central1 --project halogen-data-401020 
                 '''
             }
         }
@@ -53,6 +49,7 @@ pipeline {
                 echo 'Deploying....'
                 sh '''
                 cd /
+                kubectl get nodes
                 kubectl apply -f ./kubernetes/mongodb
                 kubectl apply -f ./kubernetes/app-deployment
                 sleep 120
